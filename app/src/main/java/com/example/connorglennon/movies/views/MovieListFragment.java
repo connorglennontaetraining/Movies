@@ -77,31 +77,6 @@ public class MovieListFragment extends Fragment {
                     public void onNext(Page value) {
                         ResultAdapter resultAdapter = new ResultAdapter(R.layout.movie_list_item, value.getResults());
                         rvMovieList.setAdapter(resultAdapter);
-                        resultAdapter.getPositionClicks().observeOn(AndroidSchedulers.mainThread())
-                                .subscribeOn(Schedulers.io())
-                                .subscribe(new Observer<Result>() {
-                                    @Override
-                                    public void onSubscribe(Disposable d) {
-
-                                    }
-
-                                    @Override
-                                    public void onNext(Result value) {
-                                        ResultSelected resultSelected = (ResultSelected) getActivity();
-                                        resultSelected.onResultSelected(value.getId());
-                                    }
-
-                                    @Override
-                                    public void onError(Throwable e) {
-
-                                    }
-
-                                    @Override
-                                    public void onComplete() {
-
-                                    }
-                                });
-
                     }
 
                     @Override

@@ -15,6 +15,8 @@ import com.example.connorglennon.movies.model.Result;
 import com.example.connorglennon.movies.service.API;
 import com.example.connorglennon.movies.util.ImageLoader;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.net.URI;
 import java.util.List;
 
@@ -27,7 +29,6 @@ import io.reactivex.subjects.PublishSubject;
 
 public class ResultAdapter extends RecyclerView.Adapter {
 
-    private final PublishSubject<Result> onClickSubject = PublishSubject.create();
     private int layoutId;
     List<Result> resultList;
 
@@ -50,7 +51,8 @@ public class ResultAdapter extends RecyclerView.Adapter {
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                onClickSubject.onNext(result);
+
+                EventBus.getDefault().post(result);
             }
         });
 
@@ -74,9 +76,5 @@ public class ResultAdapter extends RecyclerView.Adapter {
             this.poster = (ImageView) itemView.findViewById(R.id.poster);
             this.title = (TextView) itemView.findViewById(R.id.title);
         }
-    }
-
-    public Observable<Result> getPositionClicks(){
-        return onClickSubject.hide();
     }
 }

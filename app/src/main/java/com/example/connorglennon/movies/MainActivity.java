@@ -1,29 +1,20 @@
 package com.example.connorglennon.movies;
 
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.FrameLayout;
 
-import com.example.connorglennon.movies.model.Page;
 import com.example.connorglennon.movies.model.Result;
 import com.example.connorglennon.movies.service.API;
-import com.example.connorglennon.movies.service.ApiRequest;
-import com.example.connorglennon.movies.service.ConnectionService;
 import com.example.connorglennon.movies.views.MovieFragment;
 import com.example.connorglennon.movies.views.MovieListFragment;
-import com.example.connorglennon.movies.views.ResultSelected;
-import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 
-import io.reactivex.Observable;
-import io.reactivex.Observer;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
-public class MainActivity extends AppCompatActivity implements ResultSelected{
+public class MainActivity extends AppCompatActivity {
 
     FragmentManager fragmentManager;
     FrameLayout fragmentContainer;
@@ -46,15 +37,27 @@ public class MainActivity extends AppCompatActivity implements ResultSelected{
         }
     }
 
-    @Override
-    public void onResultSelected(int result) {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(Result result) {
         MovieFragment movieListFragment = new MovieFragment();
         Bundle bundle = new Bundle();
-        bundle.putInt("id", result);
+        bundle.putInt(API.PARAM_ID, result.getId());
         movieListFragment.setArguments(bundle);
         fragmentManager.beginTransaction()
                 .replace(R.id.fragmentContainer, movieListFragment)
                 .addToBackStack("")
                 .commit();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onStop() {
+        EventBus.getDefault().unregister(this);
+        super.onStop();
     }
 }
